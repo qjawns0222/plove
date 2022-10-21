@@ -18,7 +18,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      initialRoute: "/loginend",
+      initialRoute: "/join",
       routes: {
         '/': (context) => MyHomePage(title: '로그인'),
         '/loginend': (context) => loginend(),
