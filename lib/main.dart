@@ -62,6 +62,7 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   bool che = true;
   Color _joinhover = Colors.black;
+  final _formkey = GlobalKey<FormState>();
   static final storage = new FlutterSecureStorage();
   TextEditingController id = TextEditingController();
   TextEditingController pass = TextEditingController();
@@ -92,25 +93,54 @@ class _MyHomePageState extends State<MyHomePage> {
 
 //로그인 처리
   void move() async {
-    var uri = await http.get(Uri.parse(
-        "http://192.168.0.116:8080/hi?id=${id.text}&pass=${pass.text}"));
-    print('Response status: ${uri.statusCode}');
-    print('Response body: ${uri.body}');
+    var te = null;
+    print(!_formkey.currentState!.validate());
+    if (!_formkey.currentState!.validate() ||
+        id.text == "" ||
+        pass.text == "") {
+      print("정규식 틀렸는지 확인");
 
-    if (uri.body == "") {
-      _showDialog("로그인", "아이디가 존재 하지 않습니다.");
-    } else {
-      final parsed = json.decode(uri.body).cast<String, dynamic>();
-      if (parsed['pass'] == null) {
-        _showDialog("로그인", "비밀번호를 확인해 주세요");
+      if (id.text == "" || pass.text == "") {
+        te = "빈 공간 없이 입력해주세요";
       } else {
-        await storage.write(key: "token", value: parsed['pass']);
-        String? token = await storage.read(key: "token");
-        print("토큰:${token}");
-        var tologinend = Navigator.pushNamed(context, "/loginend");
+        te = "정확히 입력 해주세요";
       }
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        // 스캐폴드메신저 만들기
+        // 가장 가까운 스캐폴드 찾아서 반환해
+        SnackBar(
+          // 스낵바
+          content: Text(
+            te,
+            textAlign: TextAlign.center, // 중앙정렬
+            style: TextStyle(color: Colors.white), // 텍스트
+          ),
+          backgroundColor: Colors.grey,
+          duration: Duration(seconds: 1),
+        ),
+      );
+    } else {
+      var uri = await http.get(Uri.parse(
+          "http://192.168.0.116:8080/hi?id=${id.text}&pass=${pass.text}"));
+      print('Response status: ${uri.statusCode}');
+      print('Response body: ${uri.body}');
+
+      if (uri.body == "") {
+        _showDialog("로그인", "아이디가 존재 하지 않습니다.");
+      } else {
+        final parsed = json.decode(uri.body).cast<String, dynamic>();
+        if (parsed['pass'] == null) {
+          _showDialog("로그인", "비밀번호를 확인해 주세요");
+        } else {
+          await storage.write(key: "token", value: parsed['pass']);
+          String? token = await storage.read(key: "token");
+          print("토큰:${token}");
+          var tologinend = Navigator.pushNamed(context, "/loginend");
+        }
+      }
+      login("iea", "hello12!");
     }
-    login("iea", "hello12!");
   }
 
   void _incrementCounter() {
@@ -134,131 +164,182 @@ class _MyHomePageState extends State<MyHomePage> {
     // fast, so that you can just rebuild anything that needs updating rather
     // than having to individually change instances of widgets.
     return Scaffold(
-      appBar: AppBar(
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
-        title: Text(widget.title),
-        backgroundColor: Colors.white,
-        centerTitle: true,
-        elevation: 5.0,
-      ),
-      body: GestureDetector(
-        onTap: () {
-          print("object");
-          FocusManager.instance.primaryFocus?.unfocus();
-        },
-        child: Container(
-          color: Color.fromRGBO(227, 230, 232, 0.3),
-          child: Center(
-            // Center is a layout widget. It takes a single child and positions it
-            // in the middle of the parent.
-            child: Column(
-              // Column is also a layout widget. It takes a list of children and
-              // arranges them vertically. By default, it sizes itself to fit its
-              // children horizontally, and tries to be as tall as its parent.
-              //
-              // Invoke "debug painting" (press "p" in the console, choose the
-              // "Toggle Debug Paint" action from the Flutter Inspector in Android
-              // Studio, or the "Toggle Debug Paint" command in Visual Studio Code)
-              // to see the wireframe for each widget.
-              //
-              // Column has various properties to control how it sizes itself and
-              // how it positions its children. Here we use mainAxisAlignment to
-              // center the children vertically; the main axis here is the vertical
-              // axis because Columns are vertical (the cross axis would be
-              // horizontal).
-              mainAxisAlignment: MainAxisAlignment.start,
+        appBar: AppBar(
+          // Here we take the value from the MyHomePage object that was created by
+          // the App.build method, and use it to set our appbar title.
+          title: Text(widget.title),
+          backgroundColor: Colors.white,
+          centerTitle: true,
+          elevation: 5.0,
+        ),
+        body: Form(
+          key: _formkey,
+          child: SingleChildScrollView(
+            child: GestureDetector(
+              onTap: () {
+                print("object");
+                FocusManager.instance.primaryFocus?.unfocus();
+              },
+              child: Container(
+                color: Color.fromRGBO(227, 230, 232, 0.3),
+                child: Center(
+                  // Center is a layout widget. It takes a single child and positions it
+                  // in the middle of the parent.
+                  child: Column(
+                    // Column is also a layout widget. It takes a list of children and
+                    // arranges them vertically. By default, it sizes itself to fit its
+                    // children horizontally, and tries to be as tall as its parent.
+                    //
+                    // Invoke "debug painting" (press "p" in the console, choose the
+                    // "Toggle Debug Paint" action from the Flutter Inspector in Android
+                    // Studio, or the "Toggle Debug Paint" command in Visual Studio Code)
+                    // to see the wireframe for each widget.
+                    //
+                    // Column has various properties to control how it sizes itself and
+                    // how it positions its children. Here we use mainAxisAlignment to
+                    // center the children vertically; the main axis here is the vertical
+                    // axis because Columns are vertical (the cross axis would be
+                    // horizontal).
+                    mainAxisAlignment: MainAxisAlignment.start,
 
-              children: <Widget>[
-                SizedBox(height: 30),
-                Container(
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    border: Border(
-                      top: BorderSide(
-                        // POINT
-                        color: Color.fromRGBO(227, 230, 232, 1),
-                        width: 1.0,
-                      ),
-                    ),
-                  ),
-                  padding: EdgeInsets.fromLTRB(20, 20, 20, 0),
-                  child: TextField(
-                      controller: id,
-                      decoration: InputDecoration(
-                        hintText: '아이디를 입력 하세요',
-                        border: OutlineInputBorder(),
-                        labelText: '아이디',
-                      )),
-                ),
-                Container(
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      border: Border(
-                        bottom: BorderSide(
-                          // POINT
-                          color: Color.fromRGBO(227, 230, 232, 1),
-                          width: 1.0,
-                        ),
-                      ),
-                    ),
-                    padding: EdgeInsets.fromLTRB(20, 20, 20, 20),
-                    child: Row(children: <Widget>[
-                      Flexible(
-                        child: TextField(
-                          controller: pass,
-                          obscureText: che,
-                          decoration: InputDecoration(
-                            border: OutlineInputBorder(),
-                            hintText: '비밀번호를 입력 하세요',
-                            labelText: '비밀번호',
-                            suffixIcon: IconButton(
-                              onPressed: _incrementCounter,
-                              icon: Icon(Icons.remove_red_eye_rounded),
+                    children: <Widget>[
+                      SizedBox(height: 30),
+                      Container(
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          border: Border(
+                            top: BorderSide(
+                              // POINT
+                              color: Color.fromRGBO(227, 230, 232, 1),
+                              width: 1.0,
                             ),
                           ),
                         ),
+                        padding: EdgeInsets.fromLTRB(20, 20, 20, 0),
+                        child: TextFormField(
+                            textInputAction: TextInputAction.next,
+                            onEditingComplete: () {
+                              String? value = id.text;
+                              _formkey.currentState!.validate();
+                              if (RegExp(
+                                      r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
+                                  .hasMatch(value)) {
+                                FocusScope.of(context).nextFocus();
+                              }
+                            },
+                            validator: (value) {
+                              if (value != null && value != "") {
+                                if (!RegExp(
+                                        r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
+                                    .hasMatch(value)) {
+                                  return "이메일형식에 맞춰 주세요";
+                                }
+                              } else {
+                                return null;
+                              }
+                            },
+                            keyboardType: TextInputType.emailAddress,
+                            controller: id,
+                            decoration: InputDecoration(
+                              hintText: '아이디를 입력 하세요',
+                              border: OutlineInputBorder(),
+                              labelText: '아이디',
+                            )),
                       ),
-                    ])),
-                SizedBox(
-                  height: 10,
-                ),
-                ElevatedButton(
-                  onPressed: move,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Color.fromRGBO(146, 17, 198, 0.5),
-                    foregroundColor: Colors.white,
+                      Container(
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            border: Border(
+                              bottom: BorderSide(
+                                // POINT
+                                color: Color.fromRGBO(227, 230, 232, 1),
+                                width: 1.0,
+                              ),
+                            ),
+                          ),
+                          padding: EdgeInsets.fromLTRB(20, 20, 20, 20),
+                          child: Row(children: <Widget>[
+                            Flexible(
+                              child: TextFormField(
+                                onFieldSubmitted: (s) {
+                                  move();
+                                },
+                                textInputAction: TextInputAction.done,
+                                onEditingComplete: () {
+                                  String? value = pass.text;
+                                  _formkey.currentState!.validate();
+                                  if (RegExp(
+                                          r"^.*(?=^.{8,15}$)(?=.*\d)(?=.*[a-zA-Z])(?=.*[!@#$%^&+=]).*$/")
+                                      .hasMatch(value)) {
+                                    FocusScope.of(context).nextFocus();
+                                  }
+                                },
+                                validator: (value) {
+                                  if (value != null && value != "") {
+                                    if (!RegExp(
+                                            r"^.*(?=^.{8,15}$)(?=.*\d)(?=.*[a-zA-Z])(?=.*[!@#$%^&+=]).*$")
+                                        .hasMatch(value)) {
+                                      return "특수문자 / 문자 / 숫자 포함 형태의 8~15자리 이내로 입력해주세요";
+                                    }
+                                  } else {
+                                    return null;
+                                  }
+                                },
+                                keyboardType: TextInputType.visiblePassword,
+                                controller: pass,
+                                obscureText: che,
+                                decoration: InputDecoration(
+                                  border: OutlineInputBorder(),
+                                  hintText: '비밀번호를 입력 하세요',
+                                  labelText: '비밀번호',
+                                  suffixIcon: IconButton(
+                                    onPressed: _incrementCounter,
+                                    icon: Icon(Icons.remove_red_eye_rounded),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ])),
+                      SizedBox(
+                        height: 10,
+                      ),
+                      ElevatedButton(
+                        onPressed: move,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Color.fromRGBO(146, 17, 198, 0.5),
+                          foregroundColor: Colors.white,
+                        ),
+                        child: Text('로그인'),
+                      ),
+                      InkWell(
+                        onHover: (s) {
+                          print("df");
+                        },
+                        child: TextButton(
+                          onPressed: () {
+                            var tojoin = Navigator.pushNamed(context, "/join");
+                          },
+                          onHover: (ds) {
+                            setState(() {
+                              ds
+                                  ? _joinhover = Colors.red
+                                  : _joinhover = Colors.black;
+                            });
+                          },
+                          child: Text(
+                            "회원가입",
+                            style: TextStyle(color: _joinhover),
+                          ),
+                        ),
+                      )
+                    ],
                   ),
-                  child: Text('로그인'),
                 ),
-                InkWell(
-                  onHover: (s) {
-                    print("df");
-                  },
-                  child: TextButton(
-                    onPressed: () {
-                      var tojoin = Navigator.pushNamed(context, "/join");
-                    },
-                    onHover: (ds) {
-                      setState(() {
-                        ds
-                            ? _joinhover = Colors.red
-                            : _joinhover = Colors.black;
-                      });
-                    },
-                    child: Text(
-                      "회원가입",
-                      style: TextStyle(color: _joinhover),
-                    ),
-                  ),
-                )
-              ],
+                // This trailing comma makes auto-formatting nicer for build methods.
+              ),
             ),
           ),
-          // This trailing comma makes auto-formatting nicer for build methods.
-        ),
-      ),
-    );
+        ));
   }
 }
 
@@ -280,7 +361,7 @@ class loginend extends StatefulWidget {
 
 class loginendstate extends State<loginend> {
   static final storage = new FlutterSecureStorage();
-  String? token;
+  String token = "";
   String? tokentmp;
   gettoken() async {
     tokentmp = await storage.read(key: 'token');
@@ -293,8 +374,9 @@ class loginendstate extends State<loginend> {
   move() async {
     gettoken().then((value) => {
           //print("${value.toString()}"),
-          token = value,
-          print("${token}"),
+          setState(() {
+            token = value;
+          })
         });
   }
 
@@ -320,7 +402,7 @@ class loginendstate extends State<loginend> {
         child: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
-            children: [Text('${token}')],
+            children: [Text(token)],
           ),
         ),
       ),
