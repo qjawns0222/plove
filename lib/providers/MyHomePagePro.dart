@@ -8,6 +8,7 @@ import 'package:untitled/models/UserModel.dart';
 class MyHomePagePro with ChangeNotifier {
   bool _che = true;
   bool getChe() => _che;
+  String _te = "";
   void setChe(che) => {this._che = che};
 
   Color _joinhover = Colors.black;
@@ -75,7 +76,7 @@ class MyHomePagePro with ChangeNotifier {
           await _storage.write(key: "token", value: parsed['pass']);
           String? token = await _storage.read(key: "token");
           print("토큰:${token}");
-          var tologinend = Navigator.pushNamed(context, "/loginend");
+          var tologinend = Navigator.pushNamed(context, "/main");
         }
       }
     }

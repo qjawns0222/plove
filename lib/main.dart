@@ -33,10 +33,11 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      initialRoute: "/join",
+      debugShowCheckedModeBanner: false,
+      initialRoute: "/main",
       routes: {
         '/': (context) => MyHomePage(title: '로그인'),
-        '/loginend': (context) => loginend(),
+        '/main': (context) => loginend(),
         '/join': (context) => join(),
       },
       title: 'Flutter Demo',
