@@ -3,12 +3,12 @@ import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:untitled/providers/JoinPro.dart';
 
-class join extends StatefulWidget {
-  const join({super.key});
-  State<join> createState() => _joinState();
+class Join extends StatefulWidget {
+  const Join({super.key});
+  State<Join> createState() => _JoinState();
 }
 
-class _joinState extends State<join> {
+class _JoinState extends State<Join> {
   @override
   Widget build(BuildContext context) {
     // TODO: implement build

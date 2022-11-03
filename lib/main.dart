@@ -3,14 +3,15 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:untitled/providers/JoinPro.dart';
+import 'package:untitled/providers/MainPro.dart';
 import 'package:untitled/providers/MyHomePagePro.dart';
 import 'package:untitled/screens/MyHomePage.dart';
-import 'package:untitled/screens/join.dart';
+import 'package:untitled/screens/Join.dart';
 
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'dart:async';
 import 'package:http/http.dart' as http;
-import 'package:untitled/screens/loginend.dart';
+import 'package:untitled/screens/Main.dart';
 
 void main() {
   runApp(MultiProvider(
@@ -20,6 +21,9 @@ void main() {
       ),
       ChangeNotifierProvider(
         create: (_) => JoinPro(),
+      ),
+      ChangeNotifierProvider(
+        create: (_) => MainPro(),
       ),
     ],
     child: const MyApp(),
@@ -37,8 +41,8 @@ class MyApp extends StatelessWidget {
       initialRoute: "/main",
       routes: {
         '/': (context) => MyHomePage(title: '로그인'),
-        '/main': (context) => loginend(),
-        '/join': (context) => join(),
+        '/main': (context) => Main(),
+        '/join': (context) => Join(),
       },
       title: 'Flutter Demo',
       theme: ThemeData(
